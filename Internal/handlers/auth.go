@@ -100,5 +100,33 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"token": token})
+	logedInUser := UserCreateResponse{
+		ID:       dbUser.ID,
+		Username: dbUser.Username,
+		Email:    dbUser.Email,
+	}
+
+	c.JSON(http.StatusOK, gin.H{"token": token, "user": logedInUser})
+}
+
+func ValidateTokenHandler(c *gin.Context) {
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	var user models.Users
+	if err := utils.DB.Where("id = ?", userID).First(&user).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	response := UserCreateResponse{
+		ID:       user.ID,
+		Username: user.Username,
+		Email:    user.Email,
+	}
+
+	c.JSON(http.StatusOK, gin.H{"user": response})
 }

@@ -11,13 +11,15 @@ import (
 )
 
 type StudioCreateRequest struct {
-	Name string `json:"name" binding:"required"`
+	Name        string `json:"name" binding:"required"`
+	Description string `json:"description"`
 }
 
 type StudioCreateResponse struct {
-	ID   uuid.UUID          `json:"id"`
-	Name string             `json:"name"`
-	Host UserCreateResponse `json:"host"` // Assuming you have a UserCreateResponse struct for the host
+	ID          uuid.UUID          `json:"id"`
+	Name        string             `json:"name"`
+	Description string             `json:"description"`
+	Host        UserCreateResponse `json:"host"` // Assuming you have a UserCreateResponse struct for the host
 }
 
 func StudioCreateHandler(c *gin.Context) {
@@ -33,11 +35,12 @@ func StudioCreateHandler(c *gin.Context) {
 	}
 
 	session := models.StudioSession{
-		ID:        uuid.New(),
-		Name:      req.Name,
-		Host:      host,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		ID:          uuid.New(),
+		Name:        req.Name,
+		Description: req.Description,
+		Host:        host,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
 	}
 
 	if err := utils.DB.Create(&session).Error; err != nil {
@@ -46,8 +49,9 @@ func StudioCreateHandler(c *gin.Context) {
 	}
 
 	sessionDetials := StudioCreateResponse{
-		ID:   session.ID,
-		Name: session.Name,
+		ID:          session.ID,
+		Name:        session.Name,
+		Description: session.Description,
 		Host: UserCreateResponse{
 			ID:       host.ID,
 			Username: host.Username,
@@ -105,8 +109,9 @@ func StudioJoinHandler(c *gin.Context) {
 	sessionDetails := JoinResponse{
 		ID: joiner.ID,
 		Session: StudioCreateResponse{
-			ID:   session.ID,
-			Name: session.Name,
+			ID:          session.ID,
+			Name:        session.Name,
+			Description: session.Description,
 			Host: UserCreateResponse{
 				ID:       session.Host.ID,
 				Username: session.Host.Username,
