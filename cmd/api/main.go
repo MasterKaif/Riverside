@@ -5,15 +5,15 @@ import (
 	"time"
 
 	"github.com/MasterKaif/RiverSide/Internal/handlers"
-	"github.com/MasterKaif/RiverSide/Internal/midldewares"
+	middlewares "github.com/MasterKaif/RiverSide/Internal/midldewares"
 	"github.com/MasterKaif/RiverSide/Internal/utils"
-	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	utils.InitDB()
-	r := gin.Default() 
+	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
@@ -49,7 +49,7 @@ func main() {
 		protected.POST("/studio/join", handlers.StudioJoinHandler)
 	}
 
-	r.Run("0.0.0.0:8000")
-	log.Println("Server started on port 8000")
+	r.Run("0.0.0.0:4000")
+	log.Println("Server started on port 4000")
 
 }
