@@ -26,6 +26,17 @@ func main() {
 
 	api := r.Group("/api/v1")
 
+	// WebSocket route
+	api.GET("/ws", handlers.WebSocketHandler)
+
+	// health check route
+	api.GET("/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"status":  "ok",
+			"message": "Server is running",
+		})
+	})
+
 	// Auth routes
 	api.POST("/auth/login", handlers.LoginHandler)
 	api.POST("/auth/signup", handlers.SignupHandler)
@@ -38,7 +49,7 @@ func main() {
 		protected.POST("/studio/join", handlers.StudioJoinHandler)
 	}
 
-	r.Run(":8000")
+	r.Run("0.0.0.0:8000")
 	log.Println("Server started on port 8000")
 
 }
