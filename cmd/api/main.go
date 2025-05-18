@@ -6,13 +6,13 @@ import (
 
 	"github.com/MasterKaif/RiverSide/Internal/handlers"
 	middlewares "github.com/MasterKaif/RiverSide/Internal/midldewares"
-	"github.com/MasterKaif/RiverSide/Internal/utils"
+	// "github.com/MasterKaif/RiverSide/Internal/utils"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	utils.InitDB()
+	// utils.InitDB()
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
@@ -49,7 +49,10 @@ func main() {
 		protected.POST("/studio/join", handlers.StudioJoinHandler)
 	}
 
-	r.Run("0.0.0.0:4000")
-	log.Println("Server started on port 4000")
-
+	log.Println("About to start Gin server on port 8080")
+	err := r.Run("0.0.0.0:8080")
+	if err != nil {
+		log.Fatalf("Gin server failed to start: %v", err)
+	}
+	log.Println("Server started on port 8080")
 }
