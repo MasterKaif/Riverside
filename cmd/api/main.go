@@ -12,8 +12,10 @@ import (
 )
 
 func main() {
+	log.Println("Starting server...")
 	// utils.InitDB()
 	r := gin.Default()
+	log.Println("Initializing Gin server...")
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
