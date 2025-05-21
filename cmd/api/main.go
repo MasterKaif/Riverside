@@ -6,14 +6,14 @@ import (
 
 	"github.com/MasterKaif/RiverSide/Internal/handlers"
 	middlewares "github.com/MasterKaif/RiverSide/Internal/midldewares"
-	// "github.com/MasterKaif/RiverSide/Internal/utils"
+	"github.com/MasterKaif/RiverSide/Internal/utils"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	log.Println("Starting server...")
-	// utils.InitDB()
+	utils.InitDB()
 	r := gin.Default()
 	log.Println("Initializing Gin server...")
 

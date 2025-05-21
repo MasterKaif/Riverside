@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	// "log"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -91,7 +93,22 @@ func StudioJoinHandler(c *gin.Context) {
 	// Check if the user is already a joiner
 	var joiner models.SessionJoiners
 	if err := utils.DB.Where("session_id = ? AND user_id = ?", session.ID, user.ID).First(&joiner).Error; err == nil {
-		c.JSON(http.StatusConflict, gin.H{"error": "User already joined the studio"})
+		// c.JSON(http.StatusConflict, gin.H{"error": "User already joined the studio"})
+		// return
+		sessionDetails := JoinResponse{
+			ID: joiner.ID,
+			Session: StudioCreateResponse{
+				ID:          session.ID,
+				Name:        session.Name,
+				Description: session.Description,
+				Host: UserCreateResponse{
+					ID:       session.Host.ID,
+					Username: session.Host.Username,
+					Email:    session.Host.Email,
+				},
+			},
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "Already joined studio", "session": sessionDetails})
 		return
 	}
 
@@ -119,6 +136,8 @@ func StudioJoinHandler(c *gin.Context) {
 			},
 		},
 	}
+
+	fmt.Print("Session Details: ")
 
 	c.JSON(http.StatusOK, gin.H{"message": "Joined studio successfully", "session": sessionDetails})
 }
