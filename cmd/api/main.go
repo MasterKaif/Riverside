@@ -49,10 +49,11 @@ func main() {
 	{
 		protected.POST("/studio/create", handlers.StudioCreateHandler)
 		protected.POST("/studio/join", handlers.StudioJoinHandler)
+		protected.POST("/stream/upload", handlers.UploadStreamChunk)
 	}
 
 	log.Println("About to start Gin server on port 8080")
-	err := r.Run("0.0.0.0:8080")
+	err := r.Run("0.0.0.0:8000")
 	if err != nil {
 		log.Fatalf("Gin server failed to start: %v", err)
 	}
