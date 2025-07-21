@@ -14,6 +14,12 @@ import (
 func main() {
 	log.Println("Starting server...")
 	utils.InitDB()
+	utils.InitKafka()
+
+	// Initialize S3
+	if err := utils.InitS3(); err != nil {
+		log.Fatalf("Failed to initialize S3: %v", err)
+	}
 	r := gin.Default()
 	log.Println("Initializing Gin server...")
 

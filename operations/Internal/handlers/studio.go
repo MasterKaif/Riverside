@@ -10,6 +10,8 @@ import (
 	"github.com/MasterKaif/RiverSide/Internal/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"io"
+
 )
 
 type StudioCreateRequest struct {
@@ -141,3 +143,42 @@ func StudioJoinHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Joined studio successfully", "session": sessionDetails})
 }
+
+// UploadStreamChunk handles uploading a video/audio chunk to S3
+func UploadStreamChunk(c *gin.Context) {
+	sessionId := c.PostForm("sessionId")
+	userId := c.PostForm("userId")
+	timestamp := c.PostForm("timestamp")
+	file, header, err := c.Request.FormFile("chunk")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing chunk file"})
+		return
+	}
+	defer file.Close()
+
+	// Read file data
+	data, err := io.ReadAll(file)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read chunk data"})
+		return
+	}
+
+	// Generate S3 key: sessionId/userId/timestamp-filename
+	key := fmt.Sprintf("streams/%s/%s/%s-%s", sessionId, userId, timestamp, header.Filename)
+	contentType := header.Header.Get("Content-Type")
+	if contentType == "" {
+		contentType = "video/webm" // default
+	}
+
+	// Upload to S3 in a goroutine
+	go func(key string, data []byte, contentType string) {
+		// Use context.Background() for background tasks
+		err := utils.SendMessage(utils.STREAM_PUBLISH_TOPIC, key, data)
+		if err != nil {
+			fmt.Printf("Failed to upload chunk to S3: %v\n", err)
+		}
+	}(key, data, contentType)
+
+	c.JSON(http.StatusAccepted, gin.H{"message": "Chunk upload started", "key": key})
+}
+
